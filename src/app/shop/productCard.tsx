@@ -1,13 +1,7 @@
+import { Product } from "@/backend/database/containers/billing/products";
 import { Button } from "@/components/Button";
 import Image from "next/image";
-
-export interface Product {
-    id: number;
-    name: string;
-    description: string;
-    price: string;
-    imageUrl: string;
-}
+import Link from "next/link";
 
 export function ProductCard({ product }: { product: Product }) {
     return (
@@ -30,7 +24,9 @@ export function ProductCard({ product }: { product: Product }) {
                     <div className="mt-3 flex justify-between items-end">
                         <p>${product.price}</p>
                         <Button sm>
-                            <button>Add to cart</button>
+                            <Link href={`/shop/checkout/${product.id}`}>
+                                Add to cart
+                            </Link>
                         </Button>
                     </div>
                 </div>

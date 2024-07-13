@@ -3,6 +3,10 @@ import { Button } from "@/components/Button";
 import Image from "next/image";
 import Link from "next/link";
 
+function getPriceInDollars(priceInCents: number) {
+    return (priceInCents / 100).toFixed(2);
+}
+
 export function ProductCard({ product }: { product: Product }) {
     return (
         <div className="w-[250px]">
@@ -22,7 +26,7 @@ export function ProductCard({ product }: { product: Product }) {
                         {product.description}
                     </p>
                     <div className="mt-3 flex justify-between items-end">
-                        <p>${product.price}</p>
+                        <p>${getPriceInDollars(product.price)}</p>
                         <Button sm>
                             <Link href={`/shop/checkout/${product.id}`}>
                                 Add to cart

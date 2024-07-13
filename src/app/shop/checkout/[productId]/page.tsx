@@ -1,10 +1,10 @@
 "use client";
 
 import { products } from "@/backend/database/containers/billing/products";
-
-import { Elements, PaymentElement } from "@stripe/react-stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useEffect, useState } from "react";
+import { CheckoutForm } from "./checkoutForm";
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
@@ -55,8 +55,7 @@ export default function Checkout({
             <p>${(productInCart?.price || 0) / 100}</p>
 
             <Elements stripe={stripePromise} options={options}>
-                <PaymentElement className="my-7" />
-                <button>Submit</button>
+                <CheckoutForm />
             </Elements>
         </div>
     );

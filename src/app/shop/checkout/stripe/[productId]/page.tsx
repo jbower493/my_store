@@ -2,8 +2,7 @@
 
 import { products } from "@/backend/database/containers/billing/products";
 import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import { useEffect, useState } from "react";
+import { loadStripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { CheckoutForm } from "./checkoutForm";
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
@@ -17,45 +16,24 @@ export default function Checkout({
 }: {
     params: { productId: string };
 }) {
-    const [clientSecret, setClientSecret] = useState<string>("");
-
     const productInCart = products.find(
         (product) => product.id.toString() === params.productId
     );
 
-    async function requestBackend() {
-        const res = await fetch("http://localhost:3000/api/billing", {
-            method: "POST",
-            body: JSON.stringify({
-                productId: productInCart?.id,
-            }),
-        });
-        const data = (await res.json()) as { clientSecret: string };
-
-        setClientSecret(data.clientSecret);
-    }
-
-    useEffect(() => {
-        requestBackend();
-    }, []);
-
-    const options = {
-        // passing the client secret obtained from the server
-        clientSecret: clientSecret,
+    const options: StripeElementsOptions = {
+        mode: "payment",
+        amount: productInCart?.price,
+        currency: "aud",
+        paymentMethodCreation: "manual",
     };
-
-    if (!clientSecret) {
-        return <div>Loading...</div>;
-    }
 
     return (
         <div>
             <h1 className="text-xl font-bold">Checkout</h1>
             <p>{productInCart?.name}</p>
             <p>${(productInCart?.price || 0) / 100}</p>
-
             <Elements stripe={stripePromise} options={options}>
-                <CheckoutForm />
+                <CheckoutForm productId={productInCart?.id || 0} />
             </Elements>
         </div>
     );

@@ -28,7 +28,7 @@ export function ProductCard({ product }: { product: Product }) {
                     <div className="mt-3 flex justify-between items-end">
                         <p>${getPriceInDollars(product.price)}</p>
                         <Button sm>
-                            <Link href={`/shop/checkout/${product.id}`}>
+                            <Link href={`/shop/checkout/square/${product.id}`}>
                                 Add to cart
                             </Link>
                         </Button>

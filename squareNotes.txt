@@ -1,0 +1,2 @@
+https://developer.squareup.com/docs/web-payments/quickstart/add-sdk-to-web-client
+https://developer.squareup.com/apps/sq0idp-U7oX0w6BZlzvfhcPg7Sk2Q/settings

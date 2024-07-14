@@ -21,7 +21,7 @@ export function CheckoutForm({ productId }: { productId: number }) {
     async function fetchCreateConfirmIntent(confirmationTokenId: string) {
         try {
             const res = await fetch(
-                "http://localhost:3000/api/billing/create-confirm-intent",
+                "http://localhost:3000/api/billing/stripe/create-confirm-intent",
                 {
                     method: "POST",
                     body: JSON.stringify({

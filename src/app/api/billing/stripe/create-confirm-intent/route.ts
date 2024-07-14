@@ -9,9 +9,10 @@ export async function POST(request: NextRequest) {
         confirmation_token_id: string;
         product_id: number;
     };
-    const confirmationTokenId = requestBody.confirmation_token_id;
-    const productId = requestBody.product_id;
 
+    const confirmationTokenId = requestBody.confirmation_token_id;
+
+    const productId = requestBody.product_id;
     const product = products.find((product) => product.id === productId);
 
     try {

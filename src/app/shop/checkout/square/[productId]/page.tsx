@@ -17,7 +17,7 @@ export default function Checkout({
             <h1 className="text-xl font-bold">Checkout</h1>
             <p>{productInCart?.name}</p>
             <p>${(productInCart?.price || 0) / 100}</p>
-            <CheckoutForm />
+            <CheckoutForm productId={productInCart?.id || 0} />
         </div>
     );
 }

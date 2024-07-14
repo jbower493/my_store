@@ -1,2 +1,16 @@
-https://developer.squareup.com/docs/web-payments/quickstart/add-sdk-to-web-client
+developer dashboard:
 https://developer.squareup.com/apps/sq0idp-U7oX0w6BZlzvfhcPg7Sk2Q/settings
+https://developer.squareup.com/docs/devtools/sandbox/payments
+
+api logs
+https://developer.squareup.com/apps/sq0idp-U7oX0w6BZlzvfhcPg7Sk2Q/log
+
+sandbox transactions
+https://squareupsandbox.com/dashboard/sales/transactions
+
+frontend:
+https://developer.squareup.com/docs/web-payments/quickstart/add-sdk-to-web-client
+
+backend:
+https://developer.squareup.com/docs/sdks/nodejs/quick-start
+https://developer.squareup.com/reference/square/payments-api/create-payment

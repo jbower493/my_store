@@ -77,13 +77,10 @@ export function CheckoutForm({ productId }: { productId: number }) {
         }
 
         // Hit "confirm payment" endpoint
-        const data = await fetchCreateConfirmIntent(
-            confirmationToken?.id || ""
-        );
+        await fetchCreateConfirmIntent(confirmationToken?.id || "");
 
         setIsSubmitting(false);
         setConfirmPaymentStatus("success");
-        console.log(data);
     }
 
     if (confirmPaymentStatus === "error") {

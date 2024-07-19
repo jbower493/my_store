@@ -1,5 +1,5 @@
 import { ProductCard } from "./productCard";
-import { products } from "@/backend/database/containers/billing/products";
+import { products } from "@/backend/containers/billing/products";
 
 export default function Shop() {
     return (

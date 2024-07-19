@@ -1,4 +1,4 @@
-import { products } from "@/backend/database/containers/billing/products";
+import { products } from "@/backend/containers/billing/products";
 import { NextRequest, NextResponse } from "next/server";
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;

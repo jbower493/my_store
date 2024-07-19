@@ -1,7 +1,7 @@
 import { openDb } from "../connection";
 import { runQuery } from "../utils";
 
-async function select() {
+export async function select() {
     const db = await openDb();
 
     const { result, error } = await runQuery(() =>
@@ -13,6 +13,8 @@ async function select() {
     } else {
         console.log(error);
     }
+
+    return { result, error };
 }
 
 select();

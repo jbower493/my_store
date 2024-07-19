@@ -1,5 +1,18 @@
 import Link from "next/link";
 
+async function UserProfile() {
+    return (
+        <div className="bg-white h-8 rounded-[50px] flex gap-5 items-center px-5">
+            Hello {false || "Guest"}
+            {false ? (
+                <Link href="/api/auth/signout">Logout</Link>
+            ) : (
+                <Link href="/login">Login</Link>
+            )}
+        </div>
+    );
+}
+
 function NavItem({ children }: { children: JSX.Element }) {
     return (
         <div className="flex flex-1 justify-center items-center">
@@ -10,8 +23,8 @@ function NavItem({ children }: { children: JSX.Element }) {
 
 export function Nav() {
     return (
-        <div className="flex justify-center pt-4">
-            <nav className="bg-white rounded-[50px] flex w-[400px] h-8">
+        <div className="flex justify-between pt-4 px-5">
+            <nav className="bg-white rounded-[50px] flex w-[300px] h-8">
                 <NavItem>
                     <Link className="text-black" href="/">
                         Home
@@ -33,6 +46,7 @@ export function Nav() {
                     </Link>
                 </NavItem>
             </nav>
+            <UserProfile />
         </div>
     );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { products } from "@/backend/database/containers/billing/products";
+import { products } from "@/backend/containers/billing/products";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { CheckoutForm } from "./checkoutForm";

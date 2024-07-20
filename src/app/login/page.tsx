@@ -3,9 +3,7 @@
 export default function Login() {
     async function loginWithGoogle() {
         try {
-            const res = await fetch(
-                "http://localhost:3000/api/auth/oauth/google"
-            );
+            const res = await fetch("http://localhost:3000/api/auth/google");
 
             if (!res.ok) {
                 throw new Error("Fetch failed");

@@ -5,7 +5,7 @@ const sqlite3 = verbose();
 
 export async function openDb() {
     const db = await open({
-        filename: "./database.db",
+        filename: "database.db",
         driver: sqlite3.Database,
     });
 

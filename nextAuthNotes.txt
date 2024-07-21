@@ -1,0 +1,12 @@
+adapter methods to implement:
+
+createUser done
+getUser done
+getUserByAccount done
+updateUser
+linkAccount done
+
+createSession
+getSessionAndUser
+updateSession
+deleteSession

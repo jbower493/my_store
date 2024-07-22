@@ -3,7 +3,7 @@ import Link from "next/link";
 
 async function UserProfile() {
     const session = await auth();
-    console.log(session);
+
     return (
         <div className="bg-white h-8 rounded-[50px] flex gap-5 items-center px-5">
             Hello {session?.user?.name || "Guest"}

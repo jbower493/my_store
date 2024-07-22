@@ -26,9 +26,7 @@ export function MyAdapter(): Adapter {
             }
 
             const retrieve = await runQuery(() =>
-                db.get<User>("select * from User where id = ?", [
-                    insert.result.lastID,
-                ])
+                db.get<User>("select * from User where id = ?", [user.id])
             );
 
             if (retrieve.error) {

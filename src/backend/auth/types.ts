@@ -18,3 +18,10 @@ export interface Account {
     token_type?: string;
     scope?: string;
 }
+
+export interface Session {
+    id: string;
+    expires: string;
+    sessionToken: string;
+    userId: string;
+}

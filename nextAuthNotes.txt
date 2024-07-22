@@ -3,10 +3,10 @@ adapter methods to implement:
 createUser done
 getUser done
 getUserByAccount done
-updateUser
+updateUser done
 linkAccount done
 
-createSession
-getSessionAndUser
-updateSession
+createSession done
+getSessionAndUser done
+updateSession done
 deleteSession

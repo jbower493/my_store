@@ -1,8 +1,13 @@
 import { openDb } from "@/backend/database/utils/connection";
 import { runQuery } from "@/backend/database/utils/runQuery";
-import { Adapter, AdapterAccount, AdapterUser } from "next-auth/adapters";
+import {
+    Adapter,
+    AdapterAccount,
+    AdapterSession,
+    AdapterUser,
+} from "next-auth/adapters";
 import { v4 as uuidv4 } from "uuid";
-import { User } from "../types";
+import { Session, User } from "../types";
 
 export function MyAdapter(): Adapter {
     return {
@@ -17,7 +22,6 @@ export function MyAdapter(): Adapter {
             );
 
             if (insert.error) {
-                // Do something other than this, look this up in the docs
                 throw insert.error.details;
             }
 
@@ -28,7 +32,6 @@ export function MyAdapter(): Adapter {
             );
 
             if (retrieve.error) {
-                // Do something other than this, look this up in the docs
                 throw retrieve.error.details;
             }
 
@@ -36,14 +39,9 @@ export function MyAdapter(): Adapter {
                 throw new Error("User not found");
             }
 
-            const newUser: AdapterUser = {
-                ...retrieve.result,
-                id: retrieve.result.id,
-            };
-
             await db.close();
 
-            return newUser;
+            return retrieve.result;
         },
         async getUser(id) {
             const db = await openDb();
@@ -53,7 +51,6 @@ export function MyAdapter(): Adapter {
             );
 
             if (retrieve.error) {
-                // Do something other than this, look this up in the docs
                 throw retrieve.error.details;
             }
 
@@ -133,6 +130,185 @@ export function MyAdapter(): Adapter {
 
             return retrieved.result;
         },
+        async updateUser(user) {
+            const db = await openDb();
+
+            const insert = await runQuery(() =>
+                db.run(
+                    "update User set email = ?, name = ?, image = ?, emailVerified = ? where id = ?",
+                    [user.email, user.name, user.image, null, user.id]
+                )
+            );
+
+            if (insert.error) {
+                throw insert.error.details;
+            }
+
+            const retrieve = await runQuery(() =>
+                db.get<User>("select * from User where id = ?", [user.id])
+            );
+
+            if (retrieve.error) {
+                throw retrieve.error.details;
+            }
+
+            if (!retrieve.result) {
+                throw new Error("User not found");
+            }
+
+            await db.close();
+
+            return retrieve.result;
+        },
+        async createSession(user) {
+            const db = await openDb();
+
+            const newSessionId = uuidv4();
+
+            const insert = await runQuery(() =>
+                db.run(
+                    "insert into Session (id, expires, sessionToken, userId) values (?, ?, ?, ?)",
+                    [
+                        newSessionId,
+                        user.expires.toISOString(),
+                        user.sessionToken,
+                        user.userId,
+                    ]
+                )
+            );
+
+            if (insert.error) {
+                throw insert.error.details;
+            }
+
+            const retrieve = await runQuery(() =>
+                db.get<Session>("select * from Session where id = ?", [
+                    newSessionId,
+                ])
+            );
+
+            if (retrieve.error) {
+                throw retrieve.error.details;
+            }
+
+            if (!retrieve.result) {
+                throw new Error("Session not found");
+            }
+
+            await db.close();
+
+            const newSession: typeof user = {
+                ...retrieve.result,
+                expires: new Date(retrieve.result.expires),
+            };
+
+            return newSession;
+        },
+        async getSessionAndUser(sessionToken) {
+            const db = await openDb();
+
+            type UserAndSession = User & Session;
+
+            const retrieve = await runQuery(() =>
+                db.get<UserAndSession>(
+                    `
+                    SELECT User.*, Session.*
+                    FROM Session
+                    INNER JOIN User
+                    ON Session.userId = User.id
+                    WHERE Session.sessionToken = ?
+                `,
+                    [sessionToken]
+                )
+            );
+
+            if (retrieve.error) {
+                throw retrieve.error.details;
+            }
+
+            if (!retrieve.result) {
+                throw new Error("Session not found");
+            }
+
+            await db.close();
+
+            const userAndSession: {
+                session: AdapterSession;
+                user: AdapterUser;
+            } | null = {
+                user: {
+                    id: retrieve.result.id,
+                    email: retrieve.result.email,
+                    emailVerified: retrieve.result.emailVerified,
+                    image: retrieve.result.image,
+                    name: retrieve.result.name,
+                },
+                session: {
+                    expires: new Date(retrieve.result.expires),
+                    sessionToken: retrieve.result.sessionToken,
+                    userId: retrieve.result.userId,
+                },
+            };
+
+            return userAndSession;
+        },
+        async updateSession(session) {
+            const db = await openDb();
+
+            const newExpires = session.expires?.toISOString();
+
+            const insert = await runQuery(() =>
+                db.run(
+                    "update Session set expires = ?, userId = ? where sessionToken = ?",
+                    [newExpires, session.userId, session.sessionToken]
+                )
+            );
+
+            if (insert.error) {
+                throw insert.error.details;
+            }
+
+            const retrieve = await runQuery(() =>
+                db.get<Session>(
+                    "select * from Session where sessionToken = ?",
+                    [session.sessionToken]
+                )
+            );
+
+            if (retrieve.error) {
+                throw retrieve.error.details;
+            }
+
+            if (!retrieve.result) {
+                throw new Error("Session not found");
+            }
+
+            await db.close();
+
+            const foundSession: AdapterSession = {
+                ...retrieve.result,
+                expires: new Date(retrieve.result.expires),
+            };
+
+            return foundSession;
+        },
+        async deleteSession(sessionToken) {
+            const db = await openDb();
+
+            const deleted = await runQuery(() =>
+                db.run("delete from Session where sessionToken = ?", [
+                    sessionToken,
+                ])
+            );
+
+            if (deleted.error) {
+                throw deleted.error.details;
+            }
+
+            await db.close();
+
+            return null;
+        },
     };
 }
 
@@ -189,4 +365,58 @@ async function getUserByAccount() {
     const gotUser = await adapter.getUserByAccount?.(providerAccountId);
     console.log(gotUser);
 }
-getUserByAccount();
+// getUserByAccount();
+
+async function updateUser() {
+    const user: AdapterUser = {
+        id: "1",
+        name: "Bob Kenwright",
+        email: "bob@bobkenners.com",
+        image: "bobbkensy.jpg",
+        emailVerified: null,
+    };
+
+    const updatedUser = await adapter.updateUser?.(user);
+    console.log(updatedUser);
+}
+// updateUser();
+
+async function createSession() {
+    const session: AdapterSession = {
+        expires: new Date("2024-07-28T15:30:00.000Z"),
+        sessionToken: "oiuaelnawekfjasdfj",
+        userId: "1",
+    };
+
+    const newSession = await adapter.createSession?.(session);
+    console.log(newSession);
+}
+// createSession();
+
+async function getSessionAndUser() {
+    const sessionToken: AdapterSession["sessionToken"] = "oiuaelnawekfjasdfj";
+
+    const sessionAndUser = await adapter.getSessionAndUser?.(sessionToken);
+    console.log(sessionAndUser);
+}
+// getSessionAndUser();
+
+async function updateSession() {
+    const session: AdapterSession = {
+        expires: new Date("2024-09-09T15:30:00.000Z"),
+        sessionToken: "oiuaelnawekfjasdfj",
+        userId: "1",
+    };
+
+    const updatedSession = await adapter.updateSession?.(session);
+    console.log(updatedSession);
+}
+// updateSession();
+
+async function deleteSession() {
+    const sessionToken = "oiuaelnawekfjasdfj";
+
+    await adapter.deleteSession?.(sessionToken);
+    console.log("Session deleted");
+}
+// deleteSession();

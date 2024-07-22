@@ -55,17 +55,12 @@ export function MyAdapter(): Adapter {
             }
 
             if (!retrieve.result) {
-                throw new Error("User not found");
+                return null;
             }
-
-            const newUser: AdapterUser = {
-                ...retrieve.result,
-                id: retrieve.result.id.toString(),
-            };
 
             await db.close();
 
-            return newUser;
+            return retrieve.result;
         },
         async linkAccount(account) {
             const db = await openDb();
@@ -99,6 +94,25 @@ export function MyAdapter(): Adapter {
 
             return null;
         },
+        async getUserByEmail(email) {
+            const db = await openDb();
+
+            const retrieve = await runQuery(() =>
+                db.get<User>("select * from User where email = ?", [email])
+            );
+
+            if (retrieve.error) {
+                throw retrieve.error.details;
+            }
+
+            if (!retrieve.result) {
+                return null;
+            }
+
+            await db.close();
+
+            return retrieve.result;
+        },
         async getUserByAccount(providerAccountId) {
             const db = await openDb();
 
@@ -123,7 +137,7 @@ export function MyAdapter(): Adapter {
             }
 
             if (!retrieved.result) {
-                throw new Error("User not found");
+                return null;
             }
 
             await db.close();
@@ -227,7 +241,7 @@ export function MyAdapter(): Adapter {
             }
 
             if (!retrieve.result) {
-                throw new Error("Session not found");
+                return null;
             }
 
             await db.close();
@@ -280,7 +294,7 @@ export function MyAdapter(): Adapter {
             }
 
             if (!retrieve.result) {
-                throw new Error("Session not found");
+                return null;
             }
 
             await db.close();
